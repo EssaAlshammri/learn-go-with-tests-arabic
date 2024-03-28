@@ -1,3 +1,10 @@
-baseURL = 'http://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+baseURL = 'https://example.org/'
+languageCode = 'ar-sa'
+title = 'تعلم Go مع الاختبارات'
+theme = 'hugo-book'
+defaultContentLanguage = 'ar'
+defaultContentLanguageInSubdir = true
+[languages]
+  [languages.ar]
+    languageDirection = 'rtl'
+    weight = 1
