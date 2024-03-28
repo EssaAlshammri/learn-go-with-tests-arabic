@@ -10,7 +10,7 @@ title: "تعلم Go مع الاختبارات"
 
 -  [عيسى الشمري](https://github.com/EssaAlshammri)
 
-لا نرجوا منكم سوا الدعاء :)
+لا نرجوا منكم سوى الدعاء :)
 
 اذا كنت مهتم بالاسهام بترجمة هذا الكتاب قم بالرجوع الى هذا [المستودع](https://github.com/EssaAlshammri/learn-go-with-tests-arabic)
 
