@@ -6,6 +6,14 @@ title: "تعلم Go مع الاختبارات"
 
 # تعلم Go مع الاختبارات
 
+## الترجمة للغة العربية تمت من قبل
+
+-  [عيسى الشمري](https://github.com/EssaAlshammri)
+
+لا نرجوا منكم سوا الدعاء :)
+
+اذا كنت مهتم بالاسهام بترجمة هذا الكتاب قم بالرجوع الى هذا [المستودع](https://github.com/EssaAlshammri/learn-go-with-tests-arabic)
+
 <div style="text-align: center">
   <img src="red-green-blue-gophers-smaller.png" />
 </div>
@@ -21,13 +29,7 @@ title: "تعلم Go مع الاختبارات"
 - [اشتري لي فنجان قهوة](https://www.buymeacoffee.com/quii)
 - [ادعمني على GitHub](https://github.com/sponsors/quii)
 
-## الترجمة للغة العربية تمت من قبل
 
--  [عيسى الشمري](https://github.com/EssaAlshammri)
-
-لا نرجوا منكم سوا الدعاء :)
-
-اذا كنت مهتم بالاسهام بترجمة هذا الكتاب قم بالرجوع الى هذا [المستودع](https://github.com/EssaAlshammri/learn-go-with-tests-arabic)
 ## تعلم تطوير البرمجيات بنمط TDD باستخدام Go
 
 * استكشاف لغة Go من خلال كتابة الاختبارات
