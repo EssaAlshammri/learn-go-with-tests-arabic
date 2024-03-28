@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://learn-go-with-tests-arabic.pages.dev/'
 languageCode = 'ar-sa'
 title = 'تعلم Go مع الاختبارات'
 theme = 'hugo-book'
