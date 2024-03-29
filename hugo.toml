@@ -42,11 +42,3 @@ displayLogo = true
 enable = true
 base = "https://github.com/EssaAlshammri/learn-go-with-tests-arabic/edit/main/content/"
 
-[params.comments]
-enable = true
-type = "giscus"
-  [params.comments.giscus]
-  repo = "EssaAlshammri/learn-go-with-tests-arabic"
-  repoId = "R_kgDOLmh7-Q"
-  category = "General"
-  categoryId = "DIC_kwDOLmh7-c4CeUIJ"
