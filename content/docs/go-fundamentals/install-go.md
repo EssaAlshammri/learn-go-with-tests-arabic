@@ -1,11 +1,7 @@
 ---
 weight: 1
-bookFlatSection: true
 title: "إعداد البيئة وتثبيت go"
 ---
-
-
-# تثبيت Go، إعداد البيئة لزيادة الإنتاجية
 
 تتوفر تعليمات التثبيت الرسمية لـ Go [هنا](https://golang.org/doc/install).
 ## بيئة Go
@@ -19,7 +15,7 @@ title: "إعداد البيئة وتثبيت go"
 
 إذا لم يتم تحديد `<modulepath>`، سيحاول `go mod init` تخمين مسار الوحدة من هيكل المجلد. كما يمكن تجاوزه عن طريق توفير مسار للوحدة.
 
-```sh
+```sh {filename="terminal"}
 mkdir my-project
 cd my-project
 go mod init <modulepath>
@@ -27,10 +23,11 @@ go mod init <modulepath>
 
 سيتم انشاء ملف `go.mod` شبيه بهذا:
 
-	module cmd 
-	
-	go 1.16
+```text {filename="go.mod"}
+module cmd 
 
+go 1.16
+```
 
 يقدم التوثيق المدمج نظرة عامة على جميع أوامر `go mod` المتاحة.
 

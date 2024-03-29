@@ -1,10 +1,7 @@
 ---
 weight: 2
-bookFlatSection: true
 title: "مرحبا بالعالم!"
 ---
-
-# مرحبًا بالعالم
 
 **[يمكنك العثور على جميع الشيفرة لهذا الفصل هنا](https://github.com/quii/learn-go-with-tests/tree/main/hello-world)**
 
@@ -14,7 +11,7 @@ title: "مرحبا بالعالم!"
 - ضع ملفًا جديدًا فيه بالاسم `hello.go` وضع الشيفرة التالية داخله
 
 
-```go
+```go {filename="hello.go"}
 package main
 
 import "fmt"
@@ -43,7 +40,7 @@ func main() {
 
 لذا دعنا نفصل هذه القضايا حتى يكون من الأسهل اختبارها.
 
-```go
+```go {filename="hello.go"}
 package main
 
 import "fmt"
@@ -65,7 +62,7 @@ func main() {
 الآن قم بإنشاء ملف جديد يسمى `hello_test.go` حيث سنكتب اختبارًا لدالتنا `Hello`.
 
 
-```go
+```go {filename="hello_test.go"}
 package main
 
 import "testing"
@@ -86,7 +83,7 @@ func TestHello(t *testing.T) {
 الخطوة التالية هي تشغيل الاختبارات. أدخل `go test` في الطرفية الخاصة بك. إذا نجحت الاختبارات، فمن المحتمل أنك تستخدم نسخة سابقة من Go. ومع ذلك، إذا كنت تستخدم Go 1.16 أو أحدث، فمن المرجح أن الاختبارات لن تعمل على الإطلاق. بدلاً من ذلك، سترى رسالة خطأ مثل هذه في الطرفية:
 
 
-```shell
+```shell {filename="terminal"}
 $ go test
 go: cannot find main module; see 'go help modules'
 ```
@@ -98,7 +95,7 @@ go: cannot find main module; see 'go help modules'
 في الطرفية الخاصة بك. سينشئ ذلك ملفًا جديدًا بالمحتويات التالية:
 
 
-```text
+```text {filename="go.mod"}
 module hello
 
 go 1.16
@@ -168,7 +165,7 @@ go 1.16
 
 لنبدأ بتوثيق هذه المتطلبات في اختبار. هذا هو التطوير القائم او المعتمد على الاختبارات والذي يسمح لنا بالتأكد من أن الاختبار الخاص بنا يختبر بالفعل ما نريد. عندما تكتب الاختبارات بشكل متأخر، هناك خطر أن يستمر اختبارك في النجاح حتى لو لم تعمل الشيفرة كما هو مقصود لها ان تعمل.
 
-```go
+```go {filename="hello_test.go"}
 package main
 
 import "testing"
@@ -185,7 +182,7 @@ func TestHello(t *testing.T) {
 
 الآن قم بتشغيل `go test`، يجب أن يحدث خطأ في الترجمة
 
-```text
+```text {filename="terminal"}
 ./hello_test.go:6:18: too many arguments in call to Hello
     have (string)
     want ()
@@ -197,7 +194,7 @@ func TestHello(t *testing.T) {
 
 قم بتحرير دالة `Hello` لتقبل معامل من نوع string.
 
-```go
+```go {filename="hello.go"}
 func Hello(name string) string {
 	return "Hello, world"
 }
@@ -206,7 +203,7 @@ func Hello(name string) string {
 
 إذا حاولت تشغيل الاختبارات مرة أخرى، ستفشل الترجمة لملف `hello.go` لأنك لم تقم بتمرير معامل name. قم بإرسال "world" لتجعلها تترجم بنجاح.
 
-```go
+```go {filename="hello.go"}
 func main() {
 	fmt.Println(Hello("world"))
 }
@@ -214,7 +211,7 @@ func main() {
 
 الان عندما تقوم بتشغيل الاختبار يجب ان ترى شيئاً مماثل لـ:
 
-```text
+```text {filename="terminal"}
 hello_test.go:10: got 'Hello, world' want 'Hello, Chris''
 ```
 
@@ -222,7 +219,7 @@ hello_test.go:10: got 'Hello, world' want 'Hello, Chris''
 
 لنجعل الاختبار ينجح بواسطة استخدام معامل الاسم ودمجه مع `Hello`
 
-```go
+```go {filename="hello.go"}
 func Hello(name string) string {
 	return "Hello, " + name
 }
@@ -242,13 +239,13 @@ _لكن_ لا يجب عليك دفع الشيفرة إلى (main) حتى الآ�
 
 تُعرّف كما يلي:
 
-```go
+```go {filename="hello.go"}
 const englishHelloPrefix = "Hello, "
 ```
 
 الان بأمكاننا اعادة كتابة شيفرتنا كالتالي
 
-```go
+```go {filename="hello.go"}
 const englishHelloPrefix = "Hello, "
 
 func Hello(name string) string {
@@ -266,7 +263,7 @@ func Hello(name string) string {
 
 ابدأ بكتابة اختبار جديد.
 
-```go
+```go {filename="hello_test.go"}
 func TestHello(t *testing.T) {
 	t.Run("saying hello to people", func(t *testing.T) {
 		got := Hello("Chris")
@@ -293,7 +290,7 @@ func TestHello(t *testing.T) {
 
 بينما لدينا اختبار يفشل، دعنا نقوم بإصلاح الشيفرة باستخدام `if`.
 
-```go
+```go {filename="hello.go"}
 const englishHelloPrefix = "Hello, "
 
 func Hello(name string) string {
@@ -312,7 +309,7 @@ func Hello(name string) string {
 
 الآن بعد أن تم تجاوز الاختبارات، يمكننا ويجب علينا أن نقوم بأعادة كتابة اختباراتنا ايضا.
 
-```go
+```go {filename="hello_test.go"}
 func TestHello(t *testing.T) {
 	t.Run("saying hello to people", func(t *testing.T) {
 		got := Hello("Chris")
@@ -374,7 +371,7 @@ func assertCorrectMessage(t testing.TB, got, want string) {
 
 اكتب اختبارًا لمستخدم يمرر الإسبانية. أضفه إلى الحزمة الاختبار السابق.
 
-```go
+```go {filename="hello_test.go"}
 	t.Run("in Spanish", func(t *testing.T) {
 		got := Hello("Elodie", "Spanish")
 		want := "Hola, Elodie"
@@ -384,7 +381,7 @@ func assertCorrectMessage(t testing.TB, got, want string) {
 
 تذكر ألا تحتال! _اكتب الاختبار أولاً_. عندما تحاول تشغيل الاختبار، يجب أن يقوم المترجم بالشكوى لأنك تستدعي `Hello` بمعاملين بدلاً من واحد.
 
-```text
+```text {filename="terminal"}
 ./hello_test.go:27:19: too many arguments in call to Hello
     have (string, string)
     want (string)
@@ -392,7 +389,7 @@ func assertCorrectMessage(t testing.TB, got, want string) {
 
 حل مشكلة الترجمة عن طريق إضافة معامل نصي إضافي إلى `Hello` اسمه `language` من نوع `string`.
 
-```go
+```go {filename="hello.go"}
 func Hello(name string, language string) string {
 	if name == "" {
 		name = "World"
@@ -403,7 +400,7 @@ func Hello(name string, language string) string {
 
 عندما تحاول تشغيل الاختبار مرة أخرى، سيشتكي من عدم تمرير عدد كافٍ من المعاملات إلى `Hello` في الاختبارات الأخرى وفي `hello.go`.
 
-```text
+```text {filename="terminal"}
 ./hello.go:15:19: not enough arguments in call to Hello
     have (string)
     want (string, string)
@@ -411,13 +408,13 @@ func Hello(name string, language string) string {
 
 قم بتصحيحها عن طريق تمرير نص فارغ. الآن يجب أن تعمل جميع الاختبارات، باستثناء المتطلب الجديد.
 
-```text
+```text {filename="terminal"}
 hello_test.go:29: got 'Hello, Elodie' want 'Hola, Elodie'
 ```
 
 يمكننا استخدام `if` هنا للتحقق مما إذا كانت اللغة تساوي "Spanish"، وإذا كانت كذلك يتم تغيير الرسالة.
 
-```go
+```go {filename="hello.go"}
 func Hello(name string, language string) string {
 	if name == "" {
 		name = "World"
@@ -434,7 +431,7 @@ func Hello(name string, language string) string {
 
 الآن حان الوقت لاعادة الكتابة. ربما رأيت بعض المشاكل في الشيفرة، "نصوص سحرية"، بعضها متكرر. حاول تنقيحها بنفسك، ومع كل تغيير تأكد من إعادة تشغيل الاختبارات للتأكد من أن اعادة الكتابة لم تؤدي إلى تخريب أي شيء.
 
-```go
+```go {filename="hello.go"}
 	const spanish = "Spanish"
 	const englishHelloPrefix = "Hello, "
 	const spanishHelloPrefix = "Hola, "
@@ -459,7 +456,7 @@ func Hello(name string, language string) string {
 
 قد تكون كتبت شيئًا يبدو تقريبًا مثل هذا
 
-```go
+```go {filename="hello.go"}
 func Hello(name string, language string) string {
 	if name == "" {
 		name = "World"
@@ -479,7 +476,7 @@ func Hello(name string, language string) string {
 
 عندما تكون هناك الكثير من السطور التي تحتوي على `if` التي تفحص قيمة معينة، فمن الشائع استخدام  `switch` بدلاً من ذلك. يمكننا استخدام `switch` لاعادة كتابة الشيفرة لجعلها مقروءة أكثر وقابلة للتوسع إذا أردنا إضافة دعم لغات أخرى لاحقًا.
 
-```go
+```go {filename="hello.go"}
 func Hello(name string, language string) string {
 	if name == "" {
 		name = "World"
@@ -504,7 +501,7 @@ func Hello(name string, language string) string {
 
 يمكن أن نقول ربما دالتنا بدأت تصبح كبيرة قليلاً. أبسط اعادة كتابة لها سيكون باستخراج بعض الوظائف إلى دالة أخرى.
 
-```go
+```go {filename="hello.go"}
 
 const (
 	french  = "French"
