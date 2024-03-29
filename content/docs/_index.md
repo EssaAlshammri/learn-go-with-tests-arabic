@@ -1,24 +1,7 @@
 ---
 weight: 1
-bookFlatSection: true
 title: "تعلم Go مع الاختبارات"
 ---
-
-# تعلم Go مع الاختبارات
-
-## الترجمة للغة العربية تمت من قبل
-
--  [عيسى الشمري](https://github.com/EssaAlshammri)
-
-لا نرجوا منكم سوى الدعاء :)
-
-اذا كنت مهتم بالاسهام بترجمة هذا الكتاب قم بالرجوع الى هذا [المستودع](https://github.com/EssaAlshammri/learn-go-with-tests-arabic)
-
-<div style="text-align: center">
-  <img src="red-green-blue-gophers-smaller.png" />
-</div>
-
-[Art by Denise](https://twitter.com/deniseyu21)
 
 ## ادعمني
 

@@ -1,7 +1,8 @@
 ---
 weight: 1
-bookFlatSection: true
 title: "مبادئ go"
+sidebar:
+  open: true
 ---
 
 ["إعداد البيئة وتثبيت go"](install-go)

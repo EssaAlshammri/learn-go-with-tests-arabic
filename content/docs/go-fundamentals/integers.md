@@ -1,10 +1,7 @@
 ---
 weight: 3
-bookFlatSection: true
 title: "الأعداد الصحيحة"
 ---
-
-# الأعداد الصحيحة
 
 [يمكنك العثور على جميع الشفرات المصدرية لهذا الفصل هنا](https://github.com/quii/learn-go-with-tests/tree/main/integers)
 
@@ -12,7 +9,7 @@ title: "الأعداد الصحيحة"
 
 ## اكتب الاختبار اولا
 
-```go
+```go {filename="adder_test.go"}
 package integers
 
 import "testing"
@@ -35,7 +32,7 @@ func TestAdder(t *testing.T) {
 
 مجلد مشروعك قد يبدو مثل هذا:
 
-```
+```text
 learnGoWithTests
     |
     |-> helloworld
@@ -55,7 +52,7 @@ learnGoWithTests
 
 افحص خطأ المترجم
 
-```text
+```text {filename="terminal"}
 ./adder_test.go:6:9: undefined: Add
 ```
 
@@ -64,7 +61,7 @@ learnGoWithTests
 اكتب الكود الكافي لتلبية متطلبات المترجم _وهذا كل شيء_ - تذكر أننا نريد التحقق من أن اختباراتنا تخفق للسبب الصحيح.
 
 
-```go
+```go {filename="adder.go"}
 package integers
 
 func Add(x, y int) int {
@@ -76,7 +73,7 @@ func Add(x, y int) int {
 
 الآن قم بتشغيل الاختبارات ويجب أن نكون سعداء بأن الاختبار يقوم بأرجاع الخطا بالشكل الصحيح.
 
-```text
+```text {filename="terminal"}
 `adder_test.go:10: expected '4' but got '0'`
 ```
 
@@ -86,7 +83,7 @@ func Add(x, y int) int {
 
 بالمعنى الأكثر دقة لـ TDD، يجب علينا الآن كتابة الحد الأدنى من الكود لجعل الاختبار ينجح.
 
-```go
+```go {filename="adder.go"}
 func Add(x, y int) int {
 	return 4
 }
@@ -99,7 +96,7 @@ func Add(x, y int) int {
 
 والآن، دعنا نُصلح الأمر بالشكل الصحيح.
 
-```go
+```go {filename="adder.go"}
 func Add(x, y int) int {
 	return x + y
 }
@@ -117,7 +114,7 @@ func Add(x, y int) int {
 
 يمكنك إضافة توثيق للدوال باستخدام التعليقات، وسيظهر هذا في Go Doc تمامًا مثلما تنظر إلى وثائق المكتبة القياسية.
 
-```go
+```go {filename="adder.go"}
 // Add takes two integers and returns the sum of them.
 func Add(x, y int) int {
 	return x + y
@@ -136,7 +133,7 @@ func Add(x, y int) int {
 
 كما هو الحال مع الاختبارات التقليدية، تُعد الأمثلة دوال تتواجد في ملفات `_test.go` للحزمة. أضف الدالة `ExampleAdd` التالية إلى ملف `adder_test.go`.
 
-```go
+```go {filename="adder_test.go"}
 func ExampleAdd() {
 	sum := Add(1, 5)
 	fmt.Println(sum)
@@ -152,7 +149,7 @@ func ExampleAdd() {
 
 عند تشغيل مجموعة الاختبارات الخاصة بالحزمة، يمكننا رؤية تنفيذ وظيفة المثال دون أي جهد إضافي من قبلنا:
 
-```bash
+```bash {filename="terminal"}
 $ go test -v
 === RUN   TestAdder
 --- PASS: TestAdder (0.00s)
