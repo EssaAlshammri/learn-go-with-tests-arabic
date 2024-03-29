@@ -1,0 +1,9 @@
+{{- $style := .Get "style" -}}
+
+
+<div
+  class="hx-grid sm:hx-grid-cols-2 lg:hx-grid-cols-3 hx-grid-cols-1 hx-gap-4 hx-w-full not-prose"
+  {{ with $style }}style="{{ . | safeCSS }}"{{ end }}
+>
+  {{ .Inner }}
+</div>
