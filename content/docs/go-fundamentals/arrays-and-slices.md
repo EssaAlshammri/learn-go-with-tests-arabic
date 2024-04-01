@@ -1,0 +1,225 @@
+---
+weight: 5
+title: "المصفوفات (Arrays) والمصفوفات المرنة (Slices)"
+---
+
+
+
+**[يمكنك العثور على جميع الشفرات المصدرية لهذا الفصل هنا](https://github.com/quii/learn-go-with-tests/tree/main/arrays)**
+
+تسمح لك المصفوفات بتخزين عناصر متعددة من نفس النوع في متغير بترتيب معين.
+
+عندما يكون لديك مصفوفة، فمن الشائع جدًا أن تقوم بالتكرار عليها. لذلك دعونا
+نستخدم [معرفتنا الجديدة بـ `for`](iteration.md) لإنشاء دالة `Sum`. "مجموع" والتي ستقوم باخذ مجموعة من الأرقام وأرجع المجموع.
+
+لنستخدم مهاراتنا في TDD
+
+## لنكتب الاختبار أولاً
+
+أنشئ مجلدًا جديدًا للعمل فيه. أنشئ ملفًا جديدًا يسمى `sum_test.go` واكتب ما يلي:
+
+```go {filename="sum_test.go"}
+package main
+
+import "testing"
+
+func TestSum(t *testing.T) {
+
+	numbers := [5]int{1, 2, 3, 4, 5}
+
+	got := Sum(numbers)
+	want := 15
+
+	if got != want {
+		t.Errorf("got %d want %d given, %v", got, want, numbers)
+	}
+}
+```
+
+المصفوفات لها سعة ثابتة تحددها عندما تعلن عن المتغير. يمكننا انشاء المصفوفة بطريقتين:
+
+* \[السعة\]النوع{القيمة1, القيمة2, ..., القيمة} على سبيل المثال. `numbers := [5]int{1, 2, 3, 4, 5}`
+* \[...\]النوع{القيمة1, القيمة2, ..., القيمة} على سبيل المثال. `numbers := [...]int{1, 2, 3, 4, 5}`
+
+من المفيد في بعض الأحيان أيضًا طباعة مدخلات الدالة في رسالة الخطأ.
+هنا، نستخدم العنصر النائب `%v` لطباعة التنسيق "الافتراضي" للنوع، والذي يعمل بشكل جيد مع المصفوفات.
+
+[اقرأ اكثر عن كيفية تنسيق النصوص](https://golang.org/pkg/fmt/)
+
+## شغل الاختبار
+
+إذا قمت بأنشاء المشروع باستخدام `go mod init main` فسوف يظهر لك خطأ `_testmain.go:13:2: cannot import "main"`. ذلك لأنه وفقًا للممارسة الشائعة ستحتوي الحزمة الرئيسية (main) فقط على الحزم الأخرى وليس التعليمات البرمجية القابلة للاختبار للوحدة ومن ثم لن يسمح لك Go باستيراد حزمة بالاسم "main".
+
+لإصلاح ذلك، يمكنك إعادة تسمية الوحدة الرئيسية في ملف `go.mod` إلى أي اسم آخر.
+
+بمجرد إصلاح الخطأ أعلاه، إذا قمت بتشغيل `go test`، فسوف يفشل المترجم مع ارجاع هذه الرسالة `./sum_test.go:10:15: undefined: Sum`. يمكننا الآن متابعة كتابة الكود المراد اختباره.
+
+## اكتب الحد الأدنى من الكود حتى نتمكن من تشغيل الاختبار لنتحقق من المخرجات الفاشلة
+
+في `sum.go`
+
+```go {filename="sum.go"}
+package main
+
+func Sum(numbers [5]int) int {
+	return 0
+}
+```
+
+الاختبار سيفشل الان ويقوم بطباعة _رسالة واضحة_
+
+`sum_test.go:13: got 0 want 15 given, [1 2 3 4 5]`
+
+## لنقم بكتابة الكود الان حتى ينجح الاختبار
+
+```go {filename="sum.go"}
+func Sum(numbers [5]int) int {
+	sum := 0
+	for i := 0; i < 5; i++ {
+		sum += numbers[i]
+	}
+	return sum
+}
+```
+
+للحصول على القيمة من مصفوفة في مكان معين داخلها، ما عليك سوى استخدام `array[index]`.  (index هو مكان العنصر داخل المصفوفة)
+في هذه الحالة، نستخدم `for` للتكرار 5 مرات ونقوم بجلب العنصر من المصفوفة ثم نقوم باضافة كل عنصر إلى`sum`.
+
+## إعادة الكتابة
+
+دعنا نقدم [`range`](https://gobyexample.com/range) للمساعدة في تحسين الكود الخاص بنا
+
+```go {filename="sum.go"}
+func Sum(numbers [5]int) int {
+	sum := 0
+	for _, number := range numbers {
+		sum += number
+	}
+	return sum
+}
+```
+
+تتيح لك `range` "المدى" التكرار عبر مصفوفة. في كل تكرار، تقوم `range`  بارجاع قيمتين الاولى - الفهرس (مكان العنصر داخل المصفوفة) والثانية - القيمة المخزنة في ذلك المكان.
+قمنا تجاهل قيمة الفهرس باستخدام `_` [متغير فارغ](https://golang.org/doc/efficiency_go.html#blank). `_` يعني اننا لا نريد استخدام القيمة التي تكون بداخلة.
+
+### المصفوفات وأنواعها
+
+من الخصائص المثيرة للاهتمام للمصفوفات في Go أن الحجم يكون ضمن النوع. إن قمت بتمرير `[4]int` إلى دالة تتوقع `[5]int`، فلن يقبل بذلك المترجم. لانهم تختلف انواعهم، لذا فهي تمامًا مثل محاولة تمرير "سلسلة نصية" `string` إلى دالة تريد `int`.
+
+ربما تعتقد أنه من المرهق جدًا أن يكون للمصفوفات حجم ثابت.
+
+تحتوي Go على المصفوفات المرنة _slices_ والتي لا تقوم بتضمين حجم المجموعة مع النوع بل ويمكنها ايضا ان يكون لها اي حجم تريد.
+
+سيكون الاختبار التالي هو جمع عناصر مصفوفات ذات أحجام مختلفة.
+
+## اكتب الاختبار أولاً
+
+سوف نستخدم الآن [نوع المصفوفات المرنة] [https://go.dev/doc/effective_go#slices] الذي يسمح لنا بالحصول على مصفوفات باي حجم. بناء الجملة البرمجية مشابه جدًا للمصفوفات العادية، ما عليك سوى حذف الحجم عندما تقوم بإعلان المتغير
+
+`mySlice := []int{1,2,3}` بدلا من `myArray := [3]int{1,2,3}`
+
+```go {filename="sum_test.go"}
+func TestSum(t *testing.T) {
+
+	t.Run("collection of 5 numbers", func(t *testing.T) {
+		numbers := [5]int{1, 2, 3, 4, 5}
+
+		got := Sum(numbers)
+		want := 15
+
+		if got != want {
+			t.Errorf("got %d want %d given, %v", got, want, numbers)
+		}
+	})
+
+	t.Run("collection of any size", func(t *testing.T) {
+		numbers := []int{1, 2, 3}
+
+		got := Sum(numbers)
+		want := 6
+
+		if got != want {
+			t.Errorf("got %d want %d given, %v", got, want, numbers)
+		}
+	})
+
+}
+```
+
+## قم الان بتشغيل الاختبار
+
+لن يسمح لك المترجم بفعل ذلك وسيقوم بطباعة الخطأ التالي
+
+```text {filename="terminal"}
+./sum_test.go:22:13: cannot use numbers (type []int) as type [5]int in argument to Sum
+```
+
+## قم بكتابة ما يكفي حتى نرى مخرجات الاختبار الفاشل
+
+The problem here is we can either
+
+* Break the existing API by changing the argument to `Sum` to be a slice rather
+  than an array. When we do this, we will potentially ruin
+  someone's day because our _other_ test will no longer compile!
+* Create a new function
+
+المشكلة هنا تكمن في اننا امام خيارين
+
+* نقوم بتغيير واجهة برمجة التطبيقات الحالية عن طريق تغيير المدخلات إلى `Sum` لتكون مصفوفة مرنة بدلاً من مصفوفة عادية. عندما نفعل هذا، فمن المحتمل أن ندمر  يوم شخص ما لأن اختباراتنا الاخرى لن يقوم المترجم بقبولهم! (على افتراض اننا قمنا ببرمجة برنامج كامل ومستخدم من قبل اناس اخرين)
+* او اننا نقوم بإنشاء دالة جديدة.
+
+في حالتنا، لا أحد يستخدم دالتنا حتى الان، لذا بدلاً من أن يكون لدينا دالتين نقوم بالتطوير عليهما، فلنحصل على واحدة فقط.
+
+```go {filename="sum.go"}
+func Sum(numbers []int) int {
+	sum := 0
+	for _, number := range numbers {
+		sum += number
+	}
+	return sum
+}
+```
+
+إذا حاولت تشغيل الاختبارات، فلن يتم يقبل المترجم حتى الان، وسيتعين عليك تغيير الاختبار الأول وتقوم بتمرير مصفوفة مرنة بدلاً من المصفوفة العادية.
+
+## اكتب كود كافي لنجاح الاختبار
+
+اتضح أن إصلاح مشاكل المترجم كان كل ما يتعين علينا القيام به هنا وستنجح الاختبارات الاختبارات!
+
+## Refactor
+
+We already refactored `Sum` - all we did was replace arrays with slices, so no extra changes are required.
+Remember that we must not neglect our test code in the refactoring stage - we can further improve our `Sum` tests.
+
+## إعادة الكتابة
+
+لقد قمنا بالفعل بإعادة كتابة `Sum` - كل ما فعلناه هو استبدال المصفوفات بالمصفوفات المرنة، لذلك لا يلزم إجراء تغييرات إضافية.
+تذكر أنه يجب علينا ألا نهمل كود الاختبار الخاص بنا في مرحلة إعادة الكتابة - يمكننا تحسين اختبارات `sum` بشكل أكبر.
+
+```go {filename="sum_test.go"}
+func TestSum(t *testing.T) {
+
+	t.Run("collection of 5 numbers", func(t *testing.T) {
+		numbers := []int{1, 2, 3, 4, 5}
+
+		got := Sum(numbers)
+		want := 15
+
+		if got != want {
+			t.Errorf("got %d want %d given, %v", got, want, numbers)
+		}
+	})
+
+	t.Run("collection of any size", func(t *testing.T) {
+		numbers := []int{1, 2, 3}
+
+		got := Sum(numbers)
+		want := 6
+
+		if got != want {
+			t.Errorf("got %d want %d given, %v", got, want, numbers)
+		}
+	})
+
+}
+```
