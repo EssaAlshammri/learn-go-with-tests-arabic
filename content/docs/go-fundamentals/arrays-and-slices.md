@@ -186,10 +186,6 @@ func Sum(numbers []int) int {
 
 اتضح أن إصلاح مشاكل المترجم كان كل ما يتعين علينا القيام به هنا وستنجح الاختبارات الاختبارات!
 
-## Refactor
-
-We already refactored `Sum` - all we did was replace arrays with slices, so no extra changes are required.
-Remember that we must not neglect our test code in the refactoring stage - we can further improve our `Sum` tests.
 
 ## إعادة الكتابة
 
