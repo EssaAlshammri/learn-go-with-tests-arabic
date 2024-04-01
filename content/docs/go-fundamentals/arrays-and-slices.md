@@ -48,7 +48,19 @@ func TestSum(t *testing.T) {
 
 ## شغل الاختبار
 
-إذا قمت بأنشاء المشروع باستخدام `go mod init main` فسوف يظهر لك خطأ `_testmain.go:13:2: cannot import "main"`. ذلك لأنه وفقًا للممارسة الشائعة ستحتوي الحزمة الرئيسية (main) فقط على الحزم الأخرى وليس التعليمات البرمجية القابلة للاختبار للوحدة ومن ثم لن يسمح لك Go باستيراد حزمة بالاسم "main".
+إذا قمت بأنشاء المشروع باستخدام 
+
+```text {filename="terminal"}
+go mod init main
+```
+
+ فسوف يظهر لك خطأ 
+ 
+ ```text {filename="terminal"}
+ _testmain.go:13:2: cannot import "main"
+ ```
+ 
+ذلك لأنه وفقًا للممارسة الشائعة ستحتوي الحزمة الرئيسية (main) فقط على الحزم الأخرى وليس التعليمات البرمجية القابلة للاختبار للوحدة ومن ثم لن يسمح لك Go باستيراد حزمة بالاسم "main".
 
 لإصلاح ذلك، يمكنك إعادة تسمية الوحدة الرئيسية في ملف `go.mod` إلى أي اسم آخر.
 
@@ -114,7 +126,7 @@ func Sum(numbers [5]int) int {
 
 ## اكتب الاختبار أولاً
 
-سوف نستخدم الآن [نوع المصفوفات المرنة] [https://go.dev/doc/effective_go#slices] الذي يسمح لنا بالحصول على مصفوفات باي حجم. بناء الجملة البرمجية مشابه جدًا للمصفوفات العادية، ما عليك سوى حذف الحجم عندما تقوم بإعلان المتغير
+سوف نستخدم الآن [نوع المصفوفات المرنة](https://go.dev/doc/effective_go#slices) الذي يسمح لنا بالحصول على مصفوفات باي حجم. بناء الجملة البرمجية مشابه جدًا للمصفوفات العادية، ما عليك سوى حذف الحجم عندما تقوم بإعلان المتغير
 
 `mySlice := []int{1,2,3}` بدلا من `myArray := [3]int{1,2,3}`
 
@@ -212,3 +224,359 @@ func TestSum(t *testing.T) {
 
 }
 ```
+
+من المهم ان تتسائل عن ماهية القيمة المقدمة من اختباراتك. لا يجب أن يكون الهدف من الاختبارات هو وجود أكبر عدد ممكن من الاختبارات، ولكن يجب أن يكون الهدف هو الحصول على أكبر قدر ممكن من الثقة في الكود الخاص بك. إذا كان لديك الكثير من الاختبارات، فقد يتحول الأمر إلى مشكلة حقيقية ويضيف المزيد من العبء في الصيانة. **كل اختبار له تكلفته**.
+
+
+في حالتنا، يمكنك أن ترى أن وجود اختبارين لهذه الدالة هو غير ضروري. إذا قمت بكتابة اختبار لمصفوفة من اي حجم، فمن المرجح جدًا أنها ستعمل لمصفوفة من أي حجم اخر \(في حدود المعقول\).
+
+
+Go تحتوي على أداة اختبار مدمجة تسمى [أداة التغطية](https://blog.golang.org/cover). تمكنك هذه الاداة من معرفة مدى تغطية اختباراتك لكودك من خلال اعطائك نسبة مئوية. على الرغم من أن السعي للحصول على 100% من التغطية ليس هو الهدف النهائي، إلا أن أداة التغطية يمكن أن تساعدك في تحديد المناطق التي لم تغطيها اختباراتك. إذا كنت صارمًا في TDD، فمن المرجح أن تكون لديك تقريبًا 100% من التغطية بالفعل.
+
+قم بتجريب تشغيل اداة التغطية على الاختبارات الخاصة بك عن طريق تشغيل الأمر التالي
+
+```text {filename="terminal"}
+go test -cover
+```
+
+سيقوم بطباعة شيء مثل
+
+
+```text {filename="terminal"}
+PASS
+coverage: 100.0% of statements
+```
+
+الان قم بحذف احد الاختبارات وقم بتشغيل اداة التغطية مرة اخرى
+
+
+الان بعد ان قمت بكتابة الاختبارات والكود الخاص بك، يجب عليك ان تقوم بعمل commit للكود الخاص بك قبل ان تقوم بالمهمة القادمة.
+
+
+نحتاج ان نكتب دالة جديدة تسمى `SumAll` والتي ستأخذ عدد متغير من المصفوفات المرنة، وتعيد مصفوفة مرنة جديدة تحتوي على المجموع لكل مصفوفة تم تمريرها.
+
+على سبيل المثال 
+
+`SumAll([]int{1,2}, []int{0,9})` ستقوم بأرجاع `[]int{3, 9}`
+
+او
+
+`SumAll([]int{1,1,1})` ستقوم بأرجاع `[]int{3}`
+
+## لنكتب الاختبار أولاً
+
+
+```go {filename="sum_test.go"}
+func TestSumAll(t *testing.T) {
+
+	got := SumAll([]int{1, 2}, []int{0, 9})
+	want := []int{3, 9}
+
+	if got != want {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+```
+
+قم بتشغيل الاختبار الان
+
+`./sum_test.go:23:9: undefined: SumAll`
+
+## اكتب الكود الكافي لجعل الاختبار يعمل ويرجع نتيجة الفشل
+
+نحتاج الان لكتابة دالة `SumAll` وفقا لما يريده اختبارنا.
+
+
+Go تمكنك من كتابة [_دوال تأخذ عددا متغير من المدخلات (variadic)_](https://gobyexample.com/variadic-functions) التي يمكن أن تأخذ عددًا متغيرًا من المدخلات.
+
+
+
+```go go {filename="sum.go"}
+func SumAll(numbersToSum ...[]int) []int {
+	return nil
+}
+```
+
+هذا الكود سليم لكن الاختبارات لن تعمل بعد! بسبب المترجم
+
+`./sum_test.go:26:9: invalid operation: got != want (slice can only be compared to nil)`
+
+Go لا تسمح لك باستخدام عمليات المقارنة مع المصفوفات المرنة. يمكنك كتابة دالة للتكرار على كل `got` و `want` والتحقق من قيمهم ولكن للتسهيل، يمكننا استخدام [`reflect.DeepEqual`](https://golang.org/pkg/reflect/#DeepEqual) والتي تعتبر مفيدة لمعرفة ما إذا كان أي متغيرين متطابقين.
+
+
+```go
+func TestSumAll(t *testing.T) {
+
+	got := SumAll([]int{1, 2}, []int{0, 9})
+	want := []int{3, 9}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+```
+
+تأكد من انك قمت بأستدعاء `import reflect` في اعلى الملف لكي تتمكن من استخدام `DeepEqual`
+
+
+يجب ان تلاحظ ان `reflect.DeepEqual` ليست "آمنة" - سيتم  تجميع وترجمة الكود حتى لو قمت بكتابة شئ غير صحيح. لرؤية ذلك قم بتغيير الاختبار مؤقتًا إلى:
+
+```go {filename="sum_test.go"}
+func TestSumAll(t *testing.T) {
+
+	got := SumAll([]int{1, 2}, []int{0, 9})
+	want := "bob"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+```
+
+ما قمنا بفعلة هنا هو محاولة مقارنة مصفوفة مرنة مع سلسلة نصية. هذا لا يمكن ان يحدث او ان يكون منطقياً، ولكن الاختبار يترجم! لذلك، على الرغم من أن استخدام `reflect.DeepEqual` طريقة مريحة لمقارنة المصفوفات \(وأشياء أخرى\) يجب أن تكون حذرًا عند استخدامها.
+
+
+في الاصدار 1.21 من Go، توجد حزمة قياسية تسمى [slices](https://pkg.go.dev/slices#pkg-overview)، والتي تحتوي على [slices.Equal](https://pkg.go.dev/slices#Equal) والتي تقوم بعملية مقارنة بسيطة على المصفوفات المرنة، حيث لا تحتاج للقلق بشأن الامان مثل الحالة السابقة. يجب ملاحظة أن هذه الدالة تتوقع أن تكون العناصر [قابلة للمقارنة](https://pkg.go.dev/builtin#comparable). لذلك، لا يمكن تطبيق هذه الدالة على المصفوفات التي تحتوي على عناصر غير قابلة للمقارنة مثل المصفوفات ثنائية الأبعاد.
+
+قم بأعادة الاختبار مرة اخرى وقم بتشغيله. يجب ان تحصل على نتيجة الاختبار التالية
+
+`sum_test.go:30: got [] want [3 9]`
+
+## لنقم بكتابة كود كافي لجعل الاختبار ينجح
+
+هنا نحتاج إلى التكرار على المدخلات المتغيرة، وحساب المجموع باستخدام دالتنا `Sum` السابقة، ثم إضافتها إلى المصفوفة التي سنعيدها
+
+```go {filename="sum.go"}
+func SumAll(numbersToSum ...[]int) []int {
+	lengthOfNumbers := len(numbersToSum)
+	sums := make([]int, lengthOfNumbers)
+
+	for i, numbers := range numbersToSum {
+		sums[i] = Sum(numbers)
+	}
+
+	return sums
+}
+```
+
+اشياء جديدة كثيرة لتعلمها!
+
+هنالك طريقة جديدة لانشاء مصفوفة. `make` تسمح لك بانشاء مصفوفة بسعة ابتدائية تساوي `len` (حجم المصفوفة المدخلة) من `numbersToSum` التي نحتاج العمل عليها.
+
+بأمكاننا الحصول على عنصر داخل المصفوفة المرنة بأستخدام الفهرسة مثلما كنا نفعل مع المصفوفة العادية `mySlice[N]` للحصول على قيمة العنصر او تعديلة مثلا.
+
+يجب ان ينجح الاختبار الان
+
+
+## Refactor
+
+As mentioned, slices have a capacity. If you have a slice with a capacity of
+2 and try to do `mySlice[10] = 1` you will get a _runtime_ error.
+
+However, you can use the `append` function which takes a slice and a new value,
+then returns a new slice with all the items in it.
+
+```go
+func SumAll(numbersToSum ...[]int) []int {
+	var sums []int
+	for _, numbers := range numbersToSum {
+		sums = append(sums, Sum(numbers))
+	}
+
+	return sums
+}
+```
+
+In this implementation, we are worrying less about capacity. We start with an
+empty slice `sums` and append to it the result of `Sum` as we work through the varargs.
+
+Our next requirement is to change `SumAll` to `SumAllTails`, where it will
+calculate the totals of the "tails" of each slice. The tail of a collection is
+all items in the collection except the first one \(the "head"\).
+
+## Write the test first
+
+```go
+func TestSumAllTails(t *testing.T) {
+	got := SumAllTails([]int{1, 2}, []int{0, 9})
+	want := []int{2, 9}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+```
+
+## Try and run the test
+
+`./sum_test.go:26:9: undefined: SumAllTails`
+
+## Write the minimal amount of code for the test to run and check the failing test output
+
+Rename the function to `SumAllTails` and re-run the test
+
+`sum_test.go:30: got [3 9] want [2 9]`
+
+## Write enough code to make it pass
+
+```go
+func SumAllTails(numbersToSum ...[]int) []int {
+	var sums []int
+	for _, numbers := range numbersToSum {
+		tail := numbers[1:]
+		sums = append(sums, Sum(tail))
+	}
+
+	return sums
+}
+```
+
+Slices can be sliced! The syntax is `slice[low:high]`. If you omit the value on
+one of the sides of the `:` it captures everything to that side of it. In our
+case, we are saying "take from 1 to the end" with `numbers[1:]`. You may wish to
+spend some time writing other tests around slices and experiment with the
+slice operator to get more familiar with it.
+
+## Refactor
+
+Not a lot to refactor this time.
+
+What do you think would happen if you passed in an empty slice into our
+function? What is the "tail" of an empty slice? What happens when you tell Go to
+capture all elements from `myEmptySlice[1:]`?
+
+## Write the test first
+
+```go
+func TestSumAllTails(t *testing.T) {
+
+	t.Run("make the sums of some slices", func(t *testing.T) {
+		got := SumAllTails([]int{1, 2}, []int{0, 9})
+		want := []int{2, 9}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
+
+	t.Run("safely sum empty slices", func(t *testing.T) {
+		got := SumAllTails([]int{}, []int{3, 4, 5})
+		want := []int{0, 9}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
+
+}
+```
+
+## Try and run the test
+
+```text
+panic: runtime error: slice bounds out of range [recovered]
+    panic: runtime error: slice bounds out of range
+```
+
+Oh no! It's important to note that while the test _has compiled_, it _has a runtime error_.  
+
+Compile time errors are our friend because they help us write software that works,  
+runtime errors are our enemies because they affect our users.
+
+## Write enough code to make it pass
+
+```go
+func SumAllTails(numbersToSum ...[]int) []int {
+	var sums []int
+	for _, numbers := range numbersToSum {
+		if len(numbers) == 0 {
+			sums = append(sums, 0)
+		} else {
+			tail := numbers[1:]
+			sums = append(sums, Sum(tail))
+		}
+	}
+
+	return sums
+}
+```
+
+## Refactor
+
+Our tests have some repeated code around the assertions again, so let's extract those into a function.
+
+```go
+func TestSumAllTails(t *testing.T) {
+
+	checkSums := func(t testing.TB, got, want []int) {
+		t.Helper()
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+	}
+
+	t.Run("make the sums of tails of", func(t *testing.T) {
+		got := SumAllTails([]int{1, 2}, []int{0, 9})
+		want := []int{2, 9}
+		checkSums(t, got, want)
+	})
+
+	t.Run("safely sum empty slices", func(t *testing.T) {
+		got := SumAllTails([]int{}, []int{3, 4, 5})
+		want := []int{0, 9}
+		checkSums(t, got, want)
+	})
+
+}
+```
+
+We could've created a new function `checkSums` like we normally do, but in this case, we're showing a new technique, assigning a function to a variable. It might look strange but, it's no different to assigning a variable to a `string`, or an `int`, functions in effect are values too. 
+
+It's not shown here, but this technique can be useful when you want to bind a function to other local variables in "scope" (e.g between some `{}`). It also allows you to reduce the surface area of your API. 
+
+By defining this function inside the test, it cannot be used by other functions in this package. Hiding variables and functions that don't need to be exported is an important design consideration.
+
+A handy side-effect of this is this adds a little type-safety to our code. If
+a developer mistakenly adds a new test with `checkSums(t, got, "dave")` the compiler
+will stop them in their tracks.
+
+```bash
+$ go test
+./sum_test.go:52:21: cannot use "dave" (type string) as type []int in argument to checkSums
+```
+
+## Wrapping up
+
+We have covered
+
+* Arrays
+* Slices
+  * The various ways to make them
+  * How they have a _fixed_ capacity but you can create new slices from old ones
+    using `append`
+  * How to slice, slices!
+* `len` to get the length of an array or slice
+* Test coverage tool
+* `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
+
+We've used slices and arrays with integers but they work with any other type
+too, including arrays/slices themselves. So you can declare a variable of
+`[][]string` if you need to.
+
+[Check out the Go blog post on slices][blog-slice] for an in-depth look into
+slices. Try writing more tests to solidify what you learn from reading it.
+
+Another handy way to experiment with Go other than writing tests is the Go
+playground. You can try most things out and you can easily share your code if
+you need to ask questions. [I have made a go playground with a slice in it for you to experiment with.](https://play.golang.org/p/ICCWcRGIO68)
+
+[Here is an example](https://play.golang.org/p/bTrRmYfNYCp) of slicing an array
+and how changing the slice affects the original array; but a "copy" of the slice
+will not affect the original array.
+[Another example](https://play.golang.org/p/Poth8JS28sc) of why it's a good idea
+to make a copy of a slice after slicing a very large slice.
+
+[for]: ../iteration.md#
+[blog-slice]: https://blog.golang.org/go-slices-usage-and-internals
+[deepEqual]: https://golang.org/pkg/reflect/#DeepEqual
+[slice]: https://golang.org/doc/effective_go.html#slices
