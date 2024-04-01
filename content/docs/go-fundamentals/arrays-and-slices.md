@@ -304,7 +304,7 @@ func SumAll(numbersToSum ...[]int) []int {
 Go لا تسمح لك باستخدام عمليات المقارنة مع المصفوفات المرنة. يمكنك كتابة دالة للتكرار على كل `got` و `want` والتحقق من قيمهم ولكن للتسهيل، يمكننا استخدام [`reflect.DeepEqual`](https://golang.org/pkg/reflect/#DeepEqual) والتي تعتبر مفيدة لمعرفة ما إذا كان أي متغيرين متطابقين.
 
 
-```go
+```go {filename="sum_test.go"}
 func TestSumAll(t *testing.T) {
 
 	got := SumAll([]int{1, 2}, []int{0, 9})
