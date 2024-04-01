@@ -156,13 +156,6 @@ func TestSum(t *testing.T) {
 
 ## قم بكتابة ما يكفي حتى نرى مخرجات الاختبار الفاشل
 
-The problem here is we can either
-
-* Break the existing API by changing the argument to `Sum` to be a slice rather
-  than an array. When we do this, we will potentially ruin
-  someone's day because our _other_ test will no longer compile!
-* Create a new function
-
 المشكلة هنا تكمن في اننا امام خيارين
 
 * نقوم بتغيير واجهة برمجة التطبيقات الحالية عن طريق تغيير المدخلات إلى `Sum` لتكون مصفوفة مرنة بدلاً من مصفوفة عادية. عندما نفعل هذا، فمن المحتمل أن ندمر  يوم شخص ما لأن اختباراتنا الاخرى لن يقوم المترجم بقبولهم! (على افتراض اننا قمنا ببرمجة برنامج كامل ومستخدم من قبل اناس اخرين)
