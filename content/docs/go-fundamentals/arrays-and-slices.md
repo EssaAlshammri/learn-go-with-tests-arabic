@@ -368,15 +368,14 @@ func SumAll(numbersToSum ...[]int) []int {
 يجب ان ينجح الاختبار الان
 
 
-## Refactor
+## اعادة الكتابة
 
-As mentioned, slices have a capacity. If you have a slice with a capacity of
-2 and try to do `mySlice[10] = 1` you will get a _runtime_ error.
 
-However, you can use the `append` function which takes a slice and a new value,
-then returns a new slice with all the items in it.
+كما ذكرنا، المصفوفات المرنة لها سعة. إذا كان لديك مصفوفة مرنة بسعة 2 وحاولت القيام بـ `mySlice[10] = 1` ستحصل على خطأ في وقت التشغيل.
 
-```go
+ايضاً يمكنك استخدام الدالة `append` التي تأخذ مصفوفة مرنة وقيمة جديدة، ثم تعيد مصفوفة مرنة جديدة تحتوي على جميع العناصر فيها.
+
+```go {filename="sum.go"}
 func SumAll(numbersToSum ...[]int) []int {
 	var sums []int
 	for _, numbers := range numbersToSum {
@@ -387,16 +386,15 @@ func SumAll(numbersToSum ...[]int) []int {
 }
 ```
 
-In this implementation, we are worrying less about capacity. We start with an
-empty slice `sums` and append to it the result of `Sum` as we work through the varargs.
+بهذه الطريقة يمكنك ان تضيف عناصر جديدة الى المصفوفة المرنة بدون الحاجة الى القلق بشأن السعة.
+بدأنا بمصفوفة فارغة `sums` وقمنا بإضافة نتيجة `Sum`.
 
-Our next requirement is to change `SumAll` to `SumAllTails`, where it will
-calculate the totals of the "tails" of each slice. The tail of a collection is
-all items in the collection except the first one \(the "head"\).
 
-## Write the test first
+متطلبنا القادم هو تغيير `SumAll` إلى `SumAllTails`، حيث سيقوم بحساب المجموعات للـ "tails" من كل مصفوفة. الـ tail من مجموعة هو جميع العناصر في المجموعة باستثناء العنصر الاول \(الـ "head"\).
 
-```go
+## لنكتب الاختبار اولا
+
+```go {filename="sum_test.go"}
 func TestSumAllTails(t *testing.T) {
 	got := SumAllTails([]int{1, 2}, []int{0, 9})
 	want := []int{2, 9}
@@ -407,19 +405,22 @@ func TestSumAllTails(t *testing.T) {
 }
 ```
 
-## Try and run the test
+## لنقم بتشغيل الاختبار
 
 `./sum_test.go:26:9: undefined: SumAllTails`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## لنقم بكتابة الكود الكافي لجعل الاختبار يفشل
 
-Rename the function to `SumAllTails` and re-run the test
+
+اعد تسمية الدالة الى `SumAllTails` واعد تشغيل الاختبار
+
 
 `sum_test.go:30: got [3 9] want [2 9]`
 
-## Write enough code to make it pass
+## لنكتب الكود الكافي لجعل الاختبار ينجح
 
-```go
+
+```go {filename="sum.go"}
 func SumAllTails(numbersToSum ...[]int) []int {
 	var sums []int
 	for _, numbers := range numbersToSum {
@@ -431,23 +432,17 @@ func SumAllTails(numbersToSum ...[]int) []int {
 }
 ```
 
-Slices can be sliced! The syntax is `slice[low:high]`. If you omit the value on
-one of the sides of the `:` it captures everything to that side of it. In our
-case, we are saying "take from 1 to the end" with `numbers[1:]`. You may wish to
-spend some time writing other tests around slices and experiment with the
-slice operator to get more familiar with it.
+المصفوفات المرنة يمكن تقطيعها! الصيغة هي `slice[low:high]`. إذا قمت بتجاهل القيمة على أحد الجانبين من الـ `:` فإنه يأخذ كل شيء إلى ذلك الجانب منه. في حالتنا، نقول "خذ من 1 إلى النهاية" باستخدام `numbers[1:]`. قد ترغب في قضاء بعض الوقت في كتابة اختبارات أخرى حول المصفوفات وتجربة عامل القطع لتتعرف عليه اكثر.
 
-## Refactor
+## اعادة الكتابة
 
-Not a lot to refactor this time.
+لا يوجد الكثير لإعادة كتابته هذه المرة.
 
-What do you think would happen if you passed in an empty slice into our
-function? What is the "tail" of an empty slice? What happens when you tell Go to
-capture all elements from `myEmptySlice[1:]`?
+ما الذي تعتقد أنه سيحدث إذا قمت بتمرير مصفوفة مرنة فارغة إلى دالتنا؟ ما هو "tail" من مصفوفة فارغة؟ ماذا يحدث عندما تطلب من Go ارجاع جميع العناصر من `myEmptySlice[1:]`؟
 
-## Write the test first
+## لنكتب الاختبار اولا
 
-```go
+```go {filename="sum_test.go"}
 func TestSumAllTails(t *testing.T) {
 
 	t.Run("make the sums of some slices", func(t *testing.T) {
@@ -471,21 +466,19 @@ func TestSumAllTails(t *testing.T) {
 }
 ```
 
-## Try and run the test
+## لنجرب تشغيل الاختبار
 
-```text
+```text {filename="terminal"}
 panic: runtime error: slice bounds out of range [recovered]
     panic: runtime error: slice bounds out of range
 ```
 
-Oh no! It's important to note that while the test _has compiled_, it _has a runtime error_.  
+يجب مراعاة أن الاختبار نجح في الترجمة لكن هنالك خطأ في وقت التشغيل.
 
-Compile time errors are our friend because they help us write software that works,  
-runtime errors are our enemies because they affect our users.
+## لنكتب الكود الكافي لجعل الاختبار ينجح
 
-## Write enough code to make it pass
 
-```go
+```go {filename="sum.go"}
 func SumAllTails(numbersToSum ...[]int) []int {
 	var sums []int
 	for _, numbers := range numbersToSum {
@@ -501,11 +494,14 @@ func SumAllTails(numbersToSum ...[]int) []int {
 }
 ```
 
-## Refactor
+يجب ان ننتبه لاخطاء وقت التشغيل ايضاً. في هذه الحالة، عندما تكون المصفوفة فارغة، فإن `numbers[1:]` سيكون خارج الحدود. لذلك، يجب علينا التحقق من طول المصفوفة قبل القيام بذلك.
 
-Our tests have some repeated code around the assertions again, so let's extract those into a function.
+## اعادة الكتابة
 
-```go
+اختباراتنا تحتوي على بعض الاكواد المتكررة حول التأكيدات لذا دعونا نستخرج تلك الاكواد الى دالة, بحيث يمكننا اعادة استخدامها.
+
+
+```go {filename="sum_test.go"}
 func TestSumAllTails(t *testing.T) {
 
 	checkSums := func(t testing.TB, got, want []int) {
@@ -530,53 +526,31 @@ func TestSumAllTails(t *testing.T) {
 }
 ```
 
-We could've created a new function `checkSums` like we normally do, but in this case, we're showing a new technique, assigning a function to a variable. It might look strange but, it's no different to assigning a variable to a `string`, or an `int`, functions in effect are values too. 
+كان بالامكان كتابة داله جديدة `checkSums` كما نفعل عادة، ولكن في هذه الحالة، نقوم بعرض تقنية جديدة، وهي تعيين دالة لمتغير. قد يبدو غريبًا ولكنه ليس مختلفًا عن تعيين متغير لـ `string` أو `int`، الدوال في الواقع هي قيم أيضًا.
 
-It's not shown here, but this technique can be useful when you want to bind a function to other local variables in "scope" (e.g between some `{}`). It also allows you to reduce the surface area of your API. 
+ليس جلياً هنا ولكن هذه التقنية يمكن أن تكون مفيدة عندما تريد ربط دالة بمتغيرات محلية أخرى في "النطاق الحالي" (اي كود داخل `{}`). كما أنها تسمح لك بتقليل مساحة واجهة برمجة التطبيقات الخاصة بك.
 
-By defining this function inside the test, it cannot be used by other functions in this package. Hiding variables and functions that don't need to be exported is an important design consideration.
+قيامنا بتعريف الدالة داخل الاختبار يعني انه لا يمكن استخدامها من قبل دوال اخرى في هذه الحزمة. اخفاء المتغيرات والدوال التي لا تحتاج الى ان تكون معروضة  للجميع هو امر مهم عند تصميم برنامجك.
 
-A handy side-effect of this is this adds a little type-safety to our code. If
-a developer mistakenly adds a new test with `checkSums(t, got, "dave")` the compiler
-will stop them in their tracks.
+ميزة اضافية نحصل عليها هي ان هذه الطريقة تضيف قليلاً من الامان للنوع في كودنا. اذا قام مطور اخر بالخطأ اضافة اختبار جديد مع `checkSums(t, got, "dave")` فإن المترجم سيوقفة ويقوم بأرجاع.
 
-```bash
+```bash {filename="terminal"}
 $ go test
 ./sum_test.go:52:21: cannot use "dave" (type string) as type []int in argument to checkSums
 ```
 
-## Wrapping up
+## ختامًا
 
-We have covered
+قمنا بمراجعة
 
-* Arrays
-* Slices
-  * The various ways to make them
-  * How they have a _fixed_ capacity but you can create new slices from old ones
-    using `append`
-  * How to slice, slices!
-* `len` to get the length of an array or slice
-* Test coverage tool
-* `reflect.DeepEqual` and why it's useful but can reduce the type-safety of your code
+* المصفوفات
+* المصفوفات المرنة
+  * الطرق المتعددة لانشائها
+  * كيف ان لها حجماً معيناً ولكن يمكنك انشاء مصفوفات جديدة من القديمة باستخدام `append`
+  * كيف يمكن تقطيع او تجزئ المصفوفات
+* `len` لارجاع طول (حجم) المصفوفة
+* أداة التغطية وكيف يمكن استخدامها لمعرفة مدى تغطية اختباراتك
+* `reflect.DeepEqual` 
 
-We've used slices and arrays with integers but they work with any other type
-too, including arrays/slices themselves. So you can declare a variable of
-`[][]string` if you need to.
+قمنا باستخدام المصفوفات والمصفوفات المرنة مع الأعداد الصحيحة ولكن يمكن استخدامها مع أي نوع آخر أيضًا، بما في ذلك المصفوفات والمصفوفات نفسها. لذا يمكنك تعريف متغير من `[][]string` إذا كنت بحاجة إلى ذلك.
 
-[Check out the Go blog post on slices][blog-slice] for an in-depth look into
-slices. Try writing more tests to solidify what you learn from reading it.
-
-Another handy way to experiment with Go other than writing tests is the Go
-playground. You can try most things out and you can easily share your code if
-you need to ask questions. [I have made a go playground with a slice in it for you to experiment with.](https://play.golang.org/p/ICCWcRGIO68)
-
-[Here is an example](https://play.golang.org/p/bTrRmYfNYCp) of slicing an array
-and how changing the slice affects the original array; but a "copy" of the slice
-will not affect the original array.
-[Another example](https://play.golang.org/p/Poth8JS28sc) of why it's a good idea
-to make a copy of a slice after slicing a very large slice.
-
-[for]: ../iteration.md#
-[blog-slice]: https://blog.golang.org/go-slices-usage-and-internals
-[deepEqual]: https://golang.org/pkg/reflect/#DeepEqual
-[slice]: https://golang.org/doc/effective_go.html#slices
