@@ -7,14 +7,17 @@ title: "البنى والتوابع والواجهات"
 
 **[يمكنك العثور على جميع الشفرات المصدرية لهذا الفصل هنا](https://github.com/quii/learn-go-with-tests/tree/main/structs)**
 
-Suppose that we need some geometry code to calculate the perimeter of a rectangle given a height and width. We can write a `Perimeter(width float64, height float64)` function, where `float64` is for floating-point numbers like `123.45`.
+لنفترض اننا نحتاج لكود هندسي لحساب محيط مستطيل ما بعرض وارتفاع ما. يمكننا كتابة دالة
 
+`Perimeter(width float64, height float64)` 
 
-The TDD cycle should be pretty familiar to you by now.
+حيث `float64` هو نوع للارقام العشرية مثل `123.45`.
 
-## Write the test first
+روتين TDD اصبح واضحا لك الان
 
-```go
+## نكتب الاختبار اولا
+
+```go {filename="shapes_test.go"}
 func TestPerimeter(t *testing.T) {
 	got := Perimeter(10.0, 10.0)
 	want := 40.0
@@ -25,37 +28,41 @@ func TestPerimeter(t *testing.T) {
 }
 ```
 
-Notice the new format string? The `f` is for our `float64` and the `.2` means print 2 decimal places.
+لاحظ كيفية تنسيق الرسالة الخطأ. يمكنك استخدام النائب `%.2f` لطباعة رقم عشري برقمين بعد النقطة.
 
-## Try to run the test
+## جرب تشغيل الاختبار
 
 `./shapes_test.go:6:9: undefined: Perimeter`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## لنكتب الحد الادنى من الكود لتشغيل الاختبار والتحقق من النتائج الفاشلة
 
-```go
+
+```go {filename="shapes.go"}
 func Perimeter(width float64, height float64) float64 {
 	return 0
 }
 ```
 
-Results in `shapes_test.go:10: got 0.00 want 40.00`.
+النتيجة بعد تشغيل الاختبار
 
-## Write enough code to make it pass
+ `shapes_test.go:10: got 0.00 want 40.00`.
 
-```go
+## لنكتب الحد الادنى من الكود لنجاح الاختبار
+
+
+```go {filename="shapes.go"}
 func Perimeter(width float64, height float64) float64 {
 	return 2 * (width + height)
 }
 ```
 
-So far, so easy. Now let's create a function called `Area(width, height float64)` which returns the area of a rectangle.
+حتى الان كل شي سهل وبسيط. الان دعنا نكتب دالة `Area(width, height float64)` التي تقوم بحساب مساحة المستطيل وترجعة.
 
-Try to do it yourself, following the TDD cycle.
+حاول ان تقوم بذلك بنفسك، وفقا لدورة TDD.
 
-You should end up with tests like this
+يجب ان يكون لديك اختبار مشابه لهذا
 
-```go
+```go {filename="shapes_test.go"}
 func TestPerimeter(t *testing.T) {
 	got := Perimeter(10.0, 10.0)
 	want := 40.0
@@ -75,9 +82,9 @@ func TestArea(t *testing.T) {
 }
 ```
 
-And code like this
+وداله جديدة مثل هذه
 
-```go
+```go {filename="shapes.go"}
 func Perimeter(width float64, height float64) float64 {
 	return 2 * (width + height)
 }
@@ -87,26 +94,26 @@ func Area(width float64, height float64) float64 {
 }
 ```
 
-## Refactor
+## لنعيد الكتابة الان
 
-Our code does the job, but it doesn't contain anything explicit about rectangles. An unwary developer might try to supply the width and height of a triangle to these functions without realising they will return the wrong answer.
+الكود الذي قمنا بكتابته يقوم بما هو مطلوب منه بالشكل الصحيح، ولكنه لا يحتوي على اي شيء يدل على انه يتعامل مع المستطيلات. مطور غير متمكن قد يحاول استخدام هذه الدوال مع مثلث مثلا دون ان يدرك ان النتيجة ستكون خاطئة.
 
-We could just give the functions more specific names like `RectangleArea`. A neater solution is to define our own _type_ called `Rectangle` which encapsulates this concept for us.
+بأمكاننا اعطاء الدوال اسماء اكثر تحديدا مثل `RectangleArea`. لكن الحل الافضل هو تعريف نوع خاص بنا يسمى `Rectangle` يحتوي على هذا المفهوم.
 
-We can create a simple type using a **struct**. [A struct](https://golang.org/ref/spec#Struct_types) is just a named collection of fields where you can store data.
+يمكننا انشاء نوع بسيط باستخدام البنى (**struct**). [struct (البنى)](https://golang.org/ref/spec#Struct_types) هي مجموعة مسماة تحوي العديد من الحقول حيث يمكنك تخزين البيانات.
 
-Declare a struct like this
+يتم الاعلان وتعريف البنى كالتالي
 
-```go
+```go {filename="shapes.go"}
 type Rectangle struct {
 	Width  float64
 	Height float64
 }
 ```
 
-Now let's refactor the tests to use `Rectangle` instead of plain `float64`s.
+الان دعونا نعيد كتابة الاختبارات لتستخدم `Rectangle` بدلا من `float64`
 
-```go
+```go {filename="shapes_test.go"}
 func TestPerimeter(t *testing.T) {
 	rectangle := Rectangle{10.0, 10.0}
 	got := Perimeter(rectangle)
@@ -128,19 +135,19 @@ func TestArea(t *testing.T) {
 }
 ```
 
-Remember to run your tests before attempting to fix. The tests should show a helpful error like
+تذكر انه يمكنك تشغيل الاختبارات قبل الشروع في اصلاح الكود وستقوم بدورها بأرجاع رسائل مفيدة
 
-```text
+```text {filename="terminal"}
 ./shapes_test.go:7:18: not enough arguments in call to Perimeter
     have (Rectangle)
     want (float64, float64)
 ```
 
-You can access the fields of a struct with the syntax of `myStruct.field`.
+يمكنك الوصول الى حقول البنى بالطريقة التالية `myStruct.field`.
 
-Change the two functions to fix the test.
+قم بتغيير الدوال لتصحيح الاختبار
 
-```go
+```go {filename="shapes.go"}
 func Perimeter(rectangle Rectangle) float64 {
 	return 2 * (rectangle.Width + rectangle.Height)
 }
@@ -150,13 +157,14 @@ func Area(rectangle Rectangle) float64 {
 }
 ```
 
-I hope you'll agree that passing a `Rectangle` to a function conveys our intent more clearly, but there are more benefits of using structs that we will cover later.
+اتمنى ان توافقنا على ان استخدام `Rectangle` في الدوال يوضح النية بشكل افضل، ولكن هناك المزيد من الفوائد الاخرى في استخدام البنى سنغطيها لاحقا.
 
-Our next requirement is to write an `Area` function for circles.
 
-## Write the test first
+متطلبنا القادم هو كتابة دالة `Area` لحساب مساحة الدوائر ايضاً.
 
-```go
+## نكتب الاختبار اولا
+
+```go {filename="shapes_test.go"}
 func TestArea(t *testing.T) {
 
 	t.Run("rectangles", func(t *testing.T) {
@@ -182,54 +190,57 @@ func TestArea(t *testing.T) {
 }
 ```
 
-As you can see, the `f` has been replaced by `g`, with good reason.
-Use of `g` will print a more precise decimal number in the error message \([fmt options](https://golang.org/pkg/fmt/)\).
-For example, using a radius of 1.5 in a circle area calculation, `f` would show `7.068583` whereas `g` would show `7.0685834705770345`.
+ربما تلاحظ اننا قمنا بأستبدال النائب `f` بالنائب الاخر `g` لاسباب جيدة. استخدام النائب `g` سيطبع رقم عشري اكثر دقة في رسالة الخطأ. على سبيل المثال، عند استخدام نصف قطر 1.5 في حساب مساحة الدائرة، النائب `f` سيطبع `7.068583` بينما النائب `g` سيطبع `7.0685834705770345`.
 
-## Try to run the test
+## قم بتشغيل الاختبار
 
 `./shapes_test.go:28:13: undefined: Circle`
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## لنكتب ما يكفي لتشغيل الاختبار والتحقق من النتائج الفاشلة
 
-We need to define our `Circle` type.
+نحتاج لتعريف نوع `Circle` الخاص بنا
 
-```go
+
+```go {filename="shapes.go"}
 type Circle struct {
 	Radius float64
 }
 ```
 
-Now try to run the tests again
+الان قم بتشغيل الاختبار مجددا 
 
 `./shapes_test.go:29:14: cannot use circle (type Circle) as type Rectangle in argument to Area`
 
-Some programming languages allow you to do something like this:
+رسالة الخطأ تفيد بأنه لا يمكن استخدام `Circle` بدلا من `Rectangle` في الدالة `Area`.
+
+هنالك بعض اللغات البرمجية التي تسمح لك بفعل شيء مثل هذا
 
 ```go
 func Area(circle Circle) float64       {}
 func Area(rectangle Rectangle) float64 {}
 ```
 
-But you cannot in Go
+لكن هذا غير ممكن في Go
 
 `./shapes.go:20:32: Area redeclared in this block`
 
-We have two choices:
+نحن الان امام خيارين:
 
-* You can have functions with the same name declared in different _packages_. So we could create our `Area(Circle)` in a new package, but that feels overkill here.
-* We can define [_methods_](https://golang.org/ref/spec#Method_declarations) on our newly defined types instead.
+* اما ان نقوم بكتابة الدالة في حزمة جديدة خاصة بالدوائر. 
+* او ان نقوم بكتابة دوال توابع للانواع التي لدينا.
 
-### What are methods?
+والخيار الثاني هو الافضل في هذه الحالة.
 
-So far we have only been writing _functions_ but we have been using some methods. When we call `t.Errorf` we are calling the method `Errorf` on the instance of our `t` \(`testing.T`\).
+### ماهي التوابع؟
 
-A method is a function with a receiver.
-A method declaration binds an identifier, the method name, to a method, and associates the method with the receiver's base type.
+حتى الان كنا نكتب دوال فقط ولكننا استخدمنا بعض التوابع. عندما نقوم بكتابة `t.Errorf` نقوم بأستدعاء تابع `Errorf` على النسخة `t` من \(`testing.T`\).
 
-Methods are very similar to functions but they are called by invoking them on an instance of a particular type. Where you can just call functions wherever you like, such as `Area(rectangle)` you can only call methods on "things".
+التوابع هي دوال تحتوي على متغير يسمى المستقبل \(receiver\).
+وعند تعريف التابع يتم ربط المعرف، اسم التابع، بالتابع، ويربط التابع بنوع المستقبل.
 
-An example will help so let's change our tests first to call methods instead and then fix the code.
+التوابع مشابهة جدا للدوال ولكن يتم استدعائها عن طريق نسخة من نوع معين (شئ). حيث يمكنك استدعاء الدوال في اي مكان تريد، مثل `Area(rectangle)` يمكنك استدعاء التوابع فقط على "الاشياء".
+
+لنأخذ مثالا لايضاح ذلك، دعنا نقم بتغيير الاختبارات لاستدعاء التوابع بدلا من الدوال ومن ثم نقوم بتصحيح الكود.
 
 ```go
 func TestArea(t *testing.T) {
@@ -257,22 +268,22 @@ func TestArea(t *testing.T) {
 }
 ```
 
-If we try to run the tests, we get
+اذا قمنا بتشغيل الاختبارات الان 
 
-```text
+```text {filename="terminal"}
 ./shapes_test.go:19:19: rectangle.Area undefined (type Rectangle has no field or method Area)
 ./shapes_test.go:29:16: circle.Area undefined (type Circle has no field or method Area)
 ```
 
-> type Circle has no field or method Area
+> النوع Rectangle و Circle لا يحتوي على حقل او تابع يسمى Area
 
-I would like to reiterate how great the compiler is here. It is so important to take the time to slowly read the error messages you get, it will help you in the long run.
+نود التوقف هنا للحظة ونلاحظ فوائد المترجم. من المهم جدا ان تقرأ رسائل الخطأ بتأني، ستساعدك كثيرا في المستقبل.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## لنكتب ما يكفي لتشغيل الاختبار والتحقق من النتائج الفاشلة
 
-Let's add some methods to our types
+لنقم بإضافة بعض التوابع لانواعنا
 
-```go
+```go {filename="shapes.go"}
 type Rectangle struct {
 	Width  float64
 	Height float64
