@@ -302,53 +302,57 @@ func (c Circle) Area() float64 {
 }
 ```
 
-The syntax for declaring methods is almost the same as functions and that's because they're so similar. The only difference is the syntax of the method receiver `func (receiverName ReceiverType) MethodName(args)`.
+طريقة تعريف التابع مشابهة جدا للدوال ولكن الفرق الوحيد هو في تعريف المستقبل
 
-When your method is called on a variable of that type, you get your reference to its data via the `receiverName` variable. In many other programming languages this is done implicitly and you access the receiver via `this`.
+`func (receiverName ReceiverType) MethodName(args)`.
 
-It is a convention in Go to have the receiver variable be the first letter of the type.
+وعند استدعاء التابع على متغير من هذا النوع، ستصل الى بياناته عن طريق المتغير `receiverName`.
+
+ومن المتعارف عليه في Go ان يكون اسم المتغير المستقبل اول حرف من النوع.
 
 ```
 r Rectangle
 ```
 
-If you try to re-run the tests they should now compile and give you some failing output.
+اذا قمت بتشغيل الاختبارات الان  ستحصل على رسالة خطأ
 
-## Write enough code to make it pass
+## لنكتب ما يكفي لتشغيل الاختبار والتحقق من نجاح الاختبار
 
-Now let's make our rectangle tests pass by fixing our new method
+الان لنصلح الدوال لتعمل بشكل صحيح
 
-```go
+```go {filename="shapes.go"}
 func (r Rectangle) Area() float64 {
 	return r.Width * r.Height
 }
 ```
 
-If you re-run the tests the rectangle tests should be passing but circle should still be failing.
+اذا قمت بتشغيل الاختبارات الان ستجد ان الاختبارات الخاصة بالمستطيل تمر بنجاح ولكن الدوائر لا تمر.
 
 To make circle's `Area` function pass we will borrow the `Pi` constant from the `math` package \(remember to import it\).
 
-```go
+حتى نصلح اختبار الدائرة، سنقوم بأستعارة الثابت `Pi` من حزمة `math` \(لا تنسى استيرادها\).
+
+```go {filename="shapes.go"}
 func (c Circle) Area() float64 {
 	return math.Pi * c.Radius * c.Radius
 }
 ```
 
-## Refactor
+## اعادة الكتابة
 
-There is some duplication in our tests.
+هنالك تكرار في اختباراتنا.
 
-All we want to do is take a collection of _shapes_, call the `Area()` method on them and then check the result.
+كل ما نريدة هو اخذ مجموعة من الاشكال، استدعاء تابع `Area()` عليها ومن ثم التحقق من النتيجة.
 
-We want to be able to write some kind of `checkArea` function that we can pass both `Rectangle`s and `Circle`s to, but fail to compile if we try to pass in something that isn't a shape.
+نريد ان نكون قادرين على كتابة دالة `checkArea` يمكننا تمرير `Rectangle` و `Circle` اليها، ولكن لا يمكننا تمرير شيء ليس شكل.
 
-With Go, we can codify this intent with **interfaces**.
+في Go بالامكان تحقيق هذا الهدف عن طريق **الواجهات**.
 
-[Interfaces](https://golang.org/ref/spec#Interface_types) are a very powerful concept in statically typed languages like Go because they allow you to make functions that can be used with different types and create highly-decoupled code whilst still maintaining type-safety.
+[الواجهات](https://golang.org/ref/spec#Interface_types) هي مفهوم قوي جدا في اللغات ذات النوع الثابت مثل Go لانها تسمح لك بكتابة دوال يمكن استخدامها مع انواع مختلفة وتصميم الكود بشكل مستقل بشكل كبير وفي نفس الوقت للحفاظ على سلامة النوع.
 
-Let's introduce this by refactoring our tests.
+لنتعلم ذلك من خلال اعادة كتابة الاختبارات.
 
-```go
+```go {filename="shapes_test.go"}
 func TestArea(t *testing.T) {
 
 	checkArea := func(t testing.TB, shape Shape, want float64) {
@@ -372,42 +376,44 @@ func TestArea(t *testing.T) {
 }
 ```
 
-We are creating a helper function like we have in other exercises but this time we are asking for a `Shape` to be passed in. If we try to call this with something that isn't a shape, then it will not compile.
+هنا قمنا بكتابة داله مساعدة مثلما قمنا في التمارين السابقة ولكن هذه المرة نطلب منك ان تمرر `Shape` الى الدالة. اذا حاولت استدعاء هذه الدالة بشيء ليس شكل، فلن يتم الترجمة.
 
-How does something become a shape? We just tell Go what a `Shape` is using an interface declaration
+كيف يمكن لاي نوع ان يصبح شكل؟ نقوم بأخبار Go ما هو `Shape` عن طريق تعريف واجهة
 
-```go
+```go {filename="shapes.go"}
 type Shape interface {
 	Area() float64
 }
 ```
 
-We're creating a new `type` just like we did with `Rectangle` and `Circle` but this time it is an `interface` rather than a `struct`.
+هنا كل ما قمنا به هو تعريف نوع جديد مثلما قمنا بذلك مع `Rectangle` و `Circle` ولكن هذه المرة هو واجهة بدلا من بنية.
 
-Once you add this to the code, the tests will pass.
+بمجرد اضافة هذا الى الكود، ستنجح الاختبارات!.
 
-### Wait, what?
+### ماذا قلت؟
 
-This is quite different to interfaces in most other programming languages. Normally you have to write code to say `My type Foo implements interface Bar`.
+هذا مختلف تماما عن الواجهات في معظم لغات البرمجة الاخرى. عادة ما يجب عليك كتابة الكود لتقول `نوعي Foo يتبع الواجهة Bar`.
 
-But in our case
+ايه انه يجب عليك اعلان ان النوع الفلاني يتبع الواجهة الفلانية.
 
-* `Rectangle` has a method called `Area` that returns a `float64` so it satisfies the `Shape` interface
-* `Circle` has a method called `Area` that returns a `float64` so it satisfies the `Shape` interface
-* `string` does not have such a method, so it doesn't satisfy the interface
-* etc.
+لكن في حالتنا هنا
 
-In Go **interface resolution is implicit**. If the type you pass in matches what the interface is asking for, it will compile.
+* `Rectangle` لديه تابع يسمى `Area` يرجع `float64` لذلك يتوافق مع الواجهة `Shape`
+* `Circle` لديه تابع يسمى `Area` يرجع `float64` لذلك يتوافق مع الواجهة `Shape`
+* `string` ليس لديه تابع مثل هذا، لذلك لا يتوافق مع الواجهة
+* وهلم جرا
 
-### Decoupling
+في Go **التوافق مع الوجهات يتم بشكل ضمني**. اذا كان النوع الذي تمرره يتوافق مع ما تطلبه الواجهة، سيتم الترجمة.
 
-Notice how our helper does not need to concern itself with whether the shape is a `Rectangle` or a `Circle` or a `Triangle`. By declaring an interface, the helper is _decoupled_ from the concrete types and only has the method it needs to do its job.
+### (Decoupling) فض الاقتران او الفصل 
 
-This kind of approach of using interfaces to declare **only what you need** is very important in software design and will be covered in more detail in later sections.
+لاحظ كيف ان دالتنا المساعدة لا تحتاج الى القلق بشأن ما اذا كان الشكل هو `Rectangle` او `Circle` او `Triangle`. عن طريق تعريف واجهة، تكون الدالة المساعدة _مفصولة_ عن الانواع الفعلية ولديها فقط التابع الذي تحتاجه للقيام بعملها.
 
-## Further refactoring
+هذه الطريقة في استخدام الواجهات لتعريف **فقط ما تحتاج اليه** هي مهمة جدا في تصميم البرمجيات وسيتم تغطيتها بتفصيل اكثر في الاقسام القادمة.
 
-Now that you have some understanding of structs we can introduce "table driven tests".
+## المزيد من اعادة الكتابة 
+
+الان وبما انه لديك بعض الفهم حول البنى يمكننا ان نقدم لك "الاختبارات المجدولة".
 
 [Table driven tests](https://go.dev/wiki/TableDrivenTests) are useful when you want to build a list of test cases that can be tested in the same manner.
 
