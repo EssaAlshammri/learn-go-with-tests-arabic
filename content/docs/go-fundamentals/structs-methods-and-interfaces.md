@@ -446,7 +446,6 @@ func TestArea(t *testing.T) {
 
 يمكن للاختبارات المجدول ان تكون اداة رائعة في مجموعة ادواتك. تكون مناسبةً جداً عندما تريد اختبار مجموعة من الدوال التي تتبع او تتوافق مع واجهة معينة.
 
-Let's demonstrate all this by adding another shape and testing it; a triangle.
 
 لنستعرض كل ذلك من خلال اضافة شكل جديد (مثلث) واختبارة
 
