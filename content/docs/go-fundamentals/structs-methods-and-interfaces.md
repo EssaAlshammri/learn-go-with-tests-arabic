@@ -501,8 +501,6 @@ type Triangle struct {
     Triangle does not implement Shape (missing Area method)
 ```
 
-It's telling us we cannot use a `Triangle` as a shape because it does not have an `Area()` method, so add an empty implementation to get the test working
-
 المترجم يخبرنا انه لا يمكن استخدام `Triangle` كشكل لانه لا يحتوي على دالة `Area()`، لذا قم بأضافة تابع فارغ لتجعل الاختبار يعمل
 
 ```go {filename="shapes.go"}
