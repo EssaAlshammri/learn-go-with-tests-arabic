@@ -415,9 +415,9 @@ type Shape interface {
 
 الان وبما انه لديك بعض الفهم حول البنى يمكننا ان نقدم لك "الاختبارات المجدولة".
 
-[Table driven tests](https://go.dev/wiki/TableDrivenTests) are useful when you want to build a list of test cases that can be tested in the same manner.
+[الاختبارات المجدولة](https://go.dev/wiki/TableDrivenTests) مفيدة عندما تريد بناء قائمة من حالات الاختبار التي يمكن اختبارها بنفس الطريقة.
 
-```go
+```go {filename="shapes_test.go"}
 func TestArea(t *testing.T) {
 
 	areaTests := []struct {
@@ -438,22 +438,24 @@ func TestArea(t *testing.T) {
 }
 ```
 
-The only new syntax here is creating an "anonymous struct", `areaTests`. We are declaring a slice of structs by using `[]struct` with two fields, the `shape` and the `want`. Then we fill the slice with cases.
+الشئ الوحيد الجديد هنا هو اننا قمنا بانشاء "بنية مجهولة"، `areaTests`. قمنا بتعريف قائمة من البنى عن طريق استخدام `[]struct` مع حقلين، `shape` و `want`. ثم قمنا بملئ القائمة بالحالات.
 
-We then iterate over them just like we do any other slice, using the struct fields to run our tests.
+نقوم بالتكرار عليهم بنفس الطريقة التي نقوم بها مع اي مصفوفة اخرى، ويمكننا الحصول على البيانات من خلال حقول البنى لتشغيل الاختبارات.
 
-You can see how it would be very easy for a developer to introduce a new shape, implement `Area` and then add it to the test cases. In addition, if a bug is found with `Area` it is very easy to add a new test case to exercise it before fixing it.
+بأمكانك رؤية كيف يمكن لاي مطور ان يقوم بأضافة شكل جديد، كل ما يحتاجة هو كتابة داله `Area` على الشكل الجديد ومن ثم اضافته الى حالات الاختبار. بالاضافة الى ذلك، اذا تم العثور على خطأ في `Area` فمن السهل جدا اضافة حالة اختبار جديدة لاختبارها قبل اصلاحها.
 
-Table driven tests can be a great item in your toolbox, but be sure that you have a need for the extra noise in the tests.
-They are a great fit when you wish to test various implementations of an interface, or if the data being passed in to a function has lots of different requirements that need testing.
+يمكن للاختبارات المجدول ان تكون اداة رائعة في مجموعة ادواتك. تكون مناسبةً جداً عندما تريد اختبار مجموعة من الدوال التي تتبع او تتوافق مع واجهة معينة.
 
 Let's demonstrate all this by adding another shape and testing it; a triangle.
 
-## Write the test first
+لنستعرض كل ذلك من خلال اضافة شكل جديد (مثلث) واختبارة
 
-Adding a new test for our new shape is very easy. Just add `{Triangle{12, 6}, 36.0},` to our list.
+## نكتب الاختبار اولا
 
-```go
+اضافة اختبار جديد لشكلنا الجديد سهل جدا. فقط قم بأضافة `{Triangle{12, 6}, 36.0},` الى قائمتنا.
+
+
+```go {filename="shapes_test.go"}
 func TestArea(t *testing.T) {
 
 	areaTests := []struct {
@@ -475,110 +477,121 @@ func TestArea(t *testing.T) {
 }
 ```
 
-## Try to run the test
+## شغل الاختبار
 
-Remember, keep trying to run the test and let the compiler guide you toward a solution.
+تذكر دائما ان تحاول تشغيل الاختبار ودع المترجم يرشدك نحو الحل.
 
-## Write the minimal amount of code for the test to run and check the failing test output
+## لنكتب ما يكفي للتحقق من النتائج الفاشلة
 
 `./shapes_test.go:25:4: undefined: Triangle`
 
-We have not defined `Triangle` yet
+لم نقم بتعريف `Triangle` بعد، لذا قم بتعريفه
 
-```go
+```go {filename="shapes.go"}
 type Triangle struct {
 	Base   float64
 	Height float64
 }
 ```
 
-Try again
+حاول مجدداً
 
-```text
+```text {filename="terminal"}
 ./shapes_test.go:25:8: cannot use Triangle literal (type Triangle) as type Shape in field value:
     Triangle does not implement Shape (missing Area method)
 ```
 
 It's telling us we cannot use a `Triangle` as a shape because it does not have an `Area()` method, so add an empty implementation to get the test working
 
-```go
+المترجم يخبرنا انه لا يمكن استخدام `Triangle` كشكل لانه لا يحتوي على دالة `Area()`، لذا قم بأضافة تابع فارغ لتجعل الاختبار يعمل
+
+```go {filename="shapes.go"}
 func (t Triangle) Area() float64 {
 	return 0
 }
 ```
 
-Finally the code compiles and we get our error
+اخيرا الكود يترجم ونحصل على خطأ
 
 `shapes_test.go:31: got 0.00 want 36.00`
 
-## Write enough code to make it pass
+## الان اكتب ما يكفي لنجاح الاختبار
 
-```go
+```go {filename="shapes.go"}
 func (t Triangle) Area() float64 {
 	return (t.Base * t.Height) * 0.5
 }
 ```
 
-And our tests pass!
+وستنجح الاختبارات الان
 
-## Refactor
+## اعادة الكتابة
 
-Again, the implementation is fine but our tests could do with some improvement.
+مجدداً ما قمنا به جيد ولكن الاختبارات تحتاج الى بعض التحسين.
 
-When you scan this
+عندما تنظر لهذا
 
-```
+```go
 {Rectangle{12, 6}, 72.0},
 {Circle{10}, 314.1592653589793},
 {Triangle{12, 6}, 36.0},
 ```
 
-It's not immediately clear what all the numbers represent and you should be aiming for your tests to be easily understood.
+لن تعرف ماذا تعني الارقام في الحالات الاختبارية بشكل سهل، ويجب ان تهدف الى جعل الاختبارات سهلة الفهم.
 
 So far you've only been shown syntax for creating instances of structs `MyStruct{val1, val2}` but you can optionally name the fields.
 
+حتى الان كل ما عرضنا عليك هو كيفية انشاء نسخ من البنى `MyStruct{val1, val2}` ولكن يمكنك اختياريا تسمية الحقول عند الانشاء.
+
 Let's see what it looks like
 
+لنرى كيف يبدو ذلك
+
+
+``` go
+{shape: Rectangle{Width: 12, Height: 6}, want: 72.0},
+{shape: Circle{Radius: 10}, want: 314.1592653589793},
+{shape: Triangle{Base: 12, Height: 6}, want: 36.0},
 ```
-        {shape: Rectangle{Width: 12, Height: 6}, want: 72.0},
-        {shape: Circle{Radius: 10}, want: 314.1592653589793},
-        {shape: Triangle{Base: 12, Height: 6}, want: 36.0},
-```
 
-In [Test-Driven Development by Example](https://g.co/kgs/yCzDLF) Kent Beck refactors some tests to a point and asserts:
+في كتاب [Test-Driven Development by Example](https://g.co/kgs/yCzDLF) يقوم Kent Beck بتحسين بعض الاختبارات ويؤكد:
 
-> The test speaks to us more clearly, as if it were an assertion of truth, **not a sequence of operations**
+> الاختبار يتحدث الينا بشكل اوضح، كما لو كان تأكيدا على الحقيقة، **وليس تسلسل عمليات**
 
-\(emphasis in the quote is mine\)
+## تأكد من ان مخرجات الاختبارات مفيدة
 
-Now our tests - rather, the list of test cases - make assertions of truth about shapes and their areas.
+تتذكر مسبقا عندما كنا نقوم بكتابة `Triangle` وكان هناك اختبار فاشل؟ قام بطباعة
 
-## Make sure your test output is helpful
+`shapes_test.go:31: got 0.00 want 36.00`.
 
-Remember earlier when we were implementing `Triangle` and we had the failing test? It printed `shapes_test.go:31: got 0.00 want 36.00`.
+كنا نعلم انه مرتبط بالمثلث لاننا كنا نعمل عليه. لكن ماذا لو ان خطأً دخل الى النظام في احدى الحالات العشرين على سبيل المثال في الجدول؟
 
-We knew this was in relation to `Triangle` because we were just working with it.
-But what if a bug slipped in to the system in one of 20 cases in the table?
-How would a developer know which case failed?
-This is not a great experience for the developer, they will have to manually look through the cases to find out which case actually failed.
+كيف يمكن للمطور ان يعرف اي حالة فشلت؟
 
-We can change our error message into `%#v got %g want %g`. The `%#v` format string will print out our struct with the values in its field, so the developer can see at a glance the properties that are being tested.
+هذه ليست بالتجربة الجيدة للمطور، سيضطر الى البحث يدويا عن الحالة التي فشلت.
 
-To increase the readability of our test cases further, we can rename the `want` field into something more descriptive like `hasArea`.
+بالامكان تغيير رسالة الخطأ الى `%#v got %g want %g`. النائب `%#v` سيطبع البنية مع القيم في حقولها، لذا يمكن للمطور ان يرى بلمح البصر الخصائص التي يتم اختبارها.
 
-One final tip with table driven tests is to use `t.Run` and to name the test cases.
+وحتى نحسن من مقروئية حالات الاختبار اكثر، يمكننا تغيير حقل `want` الى شيء اكثر وصفا مثل `hasArea`.
 
-By wrapping each case in a `t.Run` you will have clearer test output on failures as it will print the name of the case
+معلومة اخيرة عن الاختبارات المجدولة هي استخدام `t.Run` وتسمية حالات الاختبار.
 
-```text
+من خلال تضمين كل حالة في `t.Run` ستحصل على مخرجات اختبار اوضح عند الفشل حيث سيطبع اسم الحالة
+
+```text {filename="terminal"}
 --- FAIL: TestArea (0.00s)
     --- FAIL: TestArea/Rectangle (0.00s)
         shapes_test.go:33: main.Rectangle{Width:12, Height:6} got 72.00 want 72.10
 ```
 
-And you can run specific tests within your table with `go test -run TestArea/Rectangle`.
+ويمكنك ايضا تشغيل اختبارات معينة ضمن جدولك باستخدام 
 
-Here is our final test code which captures this
+```text {filename="terminal"}
+go test -run TestArea/Rectangle
+```
+
+
+هنا الكود النهائي للاختبارات والذي يحتوي على هذه التحسينات
 
 ```go
 func TestArea(t *testing.T) {
@@ -607,17 +620,18 @@ func TestArea(t *testing.T) {
 }
 ```
 
-## Wrapping up
+## ختامًا
 
-This was more TDD practice, iterating over our solutions to basic mathematic problems and learning new language features motivated by our tests.
 
-* Declaring structs to create your own data types which lets you bundle related data together and make the intent of your code clearer
-* Declaring interfaces so you can define functions that can be used by different types \([parametric polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)\)
-* Adding methods so you can add functionality to your data types and so you can implement interfaces
-* Table driven tests to make your assertions clearer and your test suites easier to extend & maintain
+كان هذا تمريناً على TDD و تكرار حلولنا لمشاكل رياضية بسيطة وتعلم ميزات جديدة في اللغة مستندين الى اختباراتنا.
 
-This was an important chapter because we are now starting to define our own types. In statically typed languages like Go, being able to design your own types is essential for building software that is easy to understand, to piece together and to test.
+* اعلان البنى لانشاء انواع بيانات خاصة بك والتي تسمح لك بتجميع البيانات ذات الصلة معًا وجعل مقصود الكود الخاص بك اكثر وضوحًا
+* اعلان الواجهات لتعريف الدوال التي يمكن استخدامها من قبل انواع مختلفة \([تعددية الشكل polymorphism](https://en.wikipedia.org/wiki/Parametric_polymorphism)\)
+* اضافة توابع لكي تضيف وظائف لانواع البيانات الخاصة بك ولكي تستطيع تنفيذ الواجهات
+* الاختبارات المجدولة لتجميع حالات الاختبار المتشابهة معًا وتجعل الاختبارات اكثر وضوحًا واسهل في الصيانة والتوسع
 
-Interfaces are a great tool for hiding complexity away from other parts of the system. In our case our test helper _code_ did not need to know the exact shape it was asserting on, only how to "ask" for its area.
+هذا الفصل كان مهمًا لأننا بدأنا الآن في تعريف أنواعنا الخاصة. في لغات البرمجة ذات النوع الثابت مثل Go، القدرة على تصميم أنواعك الخاصة أمر أساسي لبناء برمجيات سهلة الفهم وسهلة التجميع والاختبار.
 
-As you become more familiar with Go you will start to see the real strength of interfaces and the standard library. You'll learn about interfaces defined in the standard library that are used _everywhere_ and by implementing them against your own types, you can very quickly re-use a lot of great functionality.
+الواجهات هي أداة رائعة لإخفاء التعقيدات بعيدًا عن أجزاء أخرى من النظام وهذا هو المقصود من فض الاقتران او الفصل. في حالتنا، لم يحتاج كود مساعد الاختبارات إلى معرفة الشكل الدقيق الذي كان يؤكد عليه، فقط كيفية "طلب" مساحته.
+
+كلما اصبحت تعرف اكثر على Go ستبدأ في رؤية قوة الواجهات والمكتبة القياسية. ستتعلم عن الواجهات المعرفة مسبقا في المكتبة القياسية والتي تستخدم في كل مكان ومن خلال تنفيذها ضد انواعك الخاصة، يمكنك اعادة استخدام الكثير من الوظائف الرائعة بسرعة كبيرة.
