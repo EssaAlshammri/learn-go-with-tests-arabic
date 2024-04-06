@@ -539,8 +539,6 @@ func (t Triangle) Area() float64 {
 
 لن تعرف ماذا تعني الارقام في الحالات الاختبارية بشكل سهل، ويجب ان تهدف الى جعل الاختبارات سهلة الفهم.
 
-So far you've only been shown syntax for creating instances of structs `MyStruct{val1, val2}` but you can optionally name the fields.
-
 حتى الان كل ما عرضنا عليك هو كيفية انشاء نسخ من البنى `MyStruct{val1, val2}` ولكن يمكنك اختياريا تسمية الحقول عند الانشاء.
 
 Let's see what it looks like
